@@ -246,6 +246,15 @@ public class RestClient implements Closeable {
         return performRequest(nextNodes(), internalRequest, null);
     }
 
+    /**
+     * 同步请求就是等待异步请求结束，把response get出来
+     *
+     * @param nodeTuple
+     * @param request
+     * @param previousException
+     * @return
+     * @throws IOException
+     */
     private Response performRequest(final NodeTuple<Iterator<Node>> nodeTuple,
                                     final InternalRequest request,
                                     Exception previousException) throws IOException {
@@ -338,6 +347,13 @@ public class RestClient implements Closeable {
         }
     }
 
+    /**
+     * Async方法内部，实际上还是通过创建子线程来实现的，其实换做是协程实现，对系统QPS应该影响不大，LIMIT在服务器端
+     *
+     * @param nodeTuple
+     * @param request
+     * @param listener
+     */
     private void performRequestAsync(final NodeTuple<Iterator<Node>> nodeTuple,
                                      final InternalRequest request,
                                      final FailureTrackingResponseListener listener) {
@@ -709,6 +725,10 @@ public class RestClient implements Closeable {
         private final Cancellable cancellable;
         private final WarningsHandler warningsHandler;
 
+        /**
+         * 根据request参数，拼装HttpCore的通信参数
+         * @param request
+         */
         InternalRequest(Request request) {
             this.request = request;
             Map<String, String> params = new HashMap<>(request.getParameters());

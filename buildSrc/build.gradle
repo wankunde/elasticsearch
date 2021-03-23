@@ -63,9 +63,9 @@ processResources {
  *         Java version                                                      *
  *****************************************************************************/
 
-if (JavaVersion.current() < JavaVersion.VERSION_11) {
-  throw new GradleException('At least Java 11 is required to build elasticsearch gradle tools')
-}
+//if (JavaVersion.current() < JavaVersion.VERSION_11) {
+//  throw new GradleException('At least Java 11 is required to build elasticsearch gradle tools')
+//}
 
 sourceSets {
   integTest {

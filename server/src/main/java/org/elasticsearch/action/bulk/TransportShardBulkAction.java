@@ -79,6 +79,27 @@ import java.util.function.Consumer;
 import java.util.function.LongSupplier;
 
 /** Performs shard-level bulk (index, delete or update) operations */
+/**
+ * 类继承关系:
+ * TransportAction: execute(Request request, ActionListener<Response> listener)
+ *      TransportReplicationAction: doExecute(Task task, Request request, ActionListener<Response> listener)
+ *          TransportWriteAction
+ *              TransportShardBulkAction
+ *
+ * 程序入口: execute() -> TransportReplicationAction.doExecute()
+ *
+ * transportService转发 transportPrimaryAction请求到lambda function handlePrimaryRequest
+ *
+ * TransportReplicationAction.handlePrimaryRequest()
+ * -> AsyncPrimaryAction.run() / doRun()
+ *    AsyncPrimaryAction.acquirePrimaryOperationPermit()
+ *    AsyncPrimaryAction.runWithPrimaryShardReference()
+ *    -> ReplicationOperation.execute()
+ *       -> TransportWriteAction.perform()
+ *       -> TransportWriteAction.shardOperationOnPrimary() // 找到对应的线程池，提交执行对应的Action内容
+ *          -> dispatchedShardOperationOnPrimary()
+ *             -> performOnPrimary()
+ */
 public class TransportShardBulkAction extends TransportWriteAction<BulkShardRequest, BulkShardRequest, BulkShardResponse> {
 
     public static final String ACTION_NAME = BulkAction.NAME + "[s]";
@@ -143,6 +164,14 @@ public class TransportShardBulkAction extends TransportWriteAction<BulkShardRequ
         return request.ramBytesUsed();
     }
 
+    /**
+     * performOnPrimary()
+     * -> ActionRunnable(){}.run() -> doRun()
+     *   -> executeBulkItemRequest()
+     *     -> IndexShard primary
+     *     -> primary.applyDeleteOperationOnPrimary()
+     *     -> primary.applyIndexOperationOnPrimary()
+     */
     public static void performOnPrimary(
         BulkShardRequest request,
         IndexShard primary,

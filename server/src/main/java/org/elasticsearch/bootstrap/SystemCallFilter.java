@@ -89,6 +89,9 @@ import java.util.Map;
  *      https://reverse.put.as/wp-content/uploads/2011/06/The-Apple-Sandbox-BHDC2011-Paper.pdf</a>
  * @see <a href="https://docs.oracle.com/cd/E23824_01/html/821-1456/prbac-2.html">
  *      https://docs.oracle.com/cd/E23824_01/html/821-1456/prbac-2.html</a>
+ *
+ * 根据不同的系统平台，进行相关底层调用，不明觉厉～～
+ * 方法入口: init()
  */
 // not an example of how to write code!!!
 final class SystemCallFilter {

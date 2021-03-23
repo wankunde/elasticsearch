@@ -63,6 +63,7 @@ public abstract class TransportAction<Request extends ActionRequest, Response ex
      * Use this method when the transport action call should result in creation of a new task associated with the call.
      *
      * This is a typical behavior.
+     * 将request封装为具体的Task进行执行
      */
     public final Task execute(Request request, ActionListener<Response> listener) {
         /*
@@ -157,6 +158,9 @@ public abstract class TransportAction<Request extends ActionRequest, Response ex
 
     protected abstract void doExecute(Task task, Request request, ActionListener<Response> listener);
 
+    /**
+     * 当前action的execute方法在执行doExecute()方法前，需要对当前的所有filter进行过滤
+     */
     private static class RequestFilterChain<Request extends ActionRequest, Response extends ActionResponse>
             implements ActionFilterChain<Request, Response> {
 

@@ -664,6 +664,14 @@ public abstract class TransportReplicationAction<
      * node with primary copy.
      *
      * Resolves index and shard id for the request before routing it to target node
+     * 解析index，shard，primary shard所在node，然后执行 performLocalAction() 或者 performRemoteAction() 方法
+     *
+     * ReroutePhase 线程
+     * run() / doRun()
+     *   -> performLocalAction() / performRemoteAction()
+     *     -> performAction()
+     *       -> transportService.sendRequest() 通过TransportService 将对应的请求转发到对应的节点上进行执行
+     *
      */
     final class ReroutePhase extends AbstractRunnable {
         private final ActionListener<Response> listener;

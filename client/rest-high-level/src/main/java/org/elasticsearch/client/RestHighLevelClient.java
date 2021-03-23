@@ -1733,6 +1733,8 @@ public class RestHighLevelClient implements Closeable {
     /**
      * Provides common functionality for asynchronously performing a request.
      * @return Cancellable instance that may be used to cancel the request
+     *
+     * High level的request和response通过对应的convert转化为rest的API进行底层调用
      */
     private <Req, Resp> Cancellable internalPerformRequestAsync(Req request,
                  CheckedFunction<Req, Request, IOException> requestConverter,

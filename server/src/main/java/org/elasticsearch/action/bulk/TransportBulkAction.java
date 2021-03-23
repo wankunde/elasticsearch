@@ -96,6 +96,11 @@ import static org.elasticsearch.index.seqno.SequenceNumbers.UNASSIGNED_SEQ_NO;
 /**
  * Groups bulk request items by shard, optionally creating non-existent indices and
  * delegates to {@link TransportShardBulkAction} for shard-level bulk execution
+ *
+ * 执行入口: doExecute()
+ * -> doInternalExecute()
+ * -> executeBulk() // 封装BulkOperation 对象，并执行run方法，很奇怪，这个并不是独立线程，就是一个普通方法
+ *
  */
 public class TransportBulkAction extends HandledTransportAction<BulkRequest, BulkResponse> {
 
@@ -173,6 +178,11 @@ public class TransportBulkAction extends HandledTransportAction<BulkRequest, Bul
         }
     }
 
+    /**
+     * 1. 判断request是否有pipeline需要处理，如果需要，由本地或转发到远程节点进行数据处理。
+     * 2. 如果允许自动创建索引，对不存在的索引，自动创建索引
+     * 3.
+     */
     protected void doInternalExecute(Task task, BulkRequest bulkRequest, ActionListener<BulkResponse> listener) {
         final long startTime = relativeTime();
         final AtomicArray<BulkItemResponse> responses = new AtomicArray<>(bulkRequest.requests.size());
@@ -401,6 +411,14 @@ public class TransportBulkAction extends HandledTransportAction<BulkRequest, Bul
             this.observer = new ClusterStateObserver(clusterService, bulkRequest.timeout(), logger, threadPool.getThreadContext());
         }
 
+        /**
+         * 1. Bulk实际处理方法， 前面还是一堆的索引转化，prohibit操作拦截等
+         * indexRequest.process(indexCreated, mappingMd, concreteIndex.getName()); // 生成uuid作为doc id
+         *
+         * 2. 根据routing值确定shard，每个shard对应一个 BulkItemRequest 列表
+         * 3. 对每个shard数据，封装 BulkShardRequest(shardId, bulkRequest.getRefreshPolicy(), new BulkItemRequest[])
+         * 对象，交给 shardBulkAction 执行
+         */
         @Override
         protected void doRun() {
             assert bulkRequest != null;

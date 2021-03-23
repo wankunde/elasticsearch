@@ -42,6 +42,9 @@ import java.util.Locale;
 
 /**
  * This class starts elasticsearch.
+ * 服务端启动类
+ * 启动方法栈: main() --> main() --> Command.main() --> execute() --> init() --> Bootstrap.init()
+ *
  */
 class Elasticsearch extends EnvironmentAwareCommand {
 

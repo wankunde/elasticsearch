@@ -61,6 +61,25 @@ import static org.elasticsearch.rest.RestStatus.METHOD_NOT_ALLOWED;
 import static org.elasticsearch.rest.RestStatus.NOT_ACCEPTABLE;
 import static org.elasticsearch.rest.RestStatus.OK;
 
+/**
+ * http请求handle入口:
+ * void dispatchRequest(RestRequest request, RestChannel channel, ThreadContext threadContext)
+ * -> tryAllHandlers()
+ * -> dispatchRequest()
+ * --> BaseRestHandler.handleRequest()
+ *   --> RestBulkAction.handleRequest()
+ *   --> RestBulkAction.prepareRequest()
+ *      --> NodeClient client.bulk()
+ *          --> AbstractClient.bulk()
+ *          --> AbstractClient.execute()
+ *          --> AbstractClient.doExecute(action, request, listener)
+ *          // 去找AbstractClient.doExecute的实现方法时，Idea提示的比较乱，需要反向去找到client的实现类，就容易找到具体方法实现了
+ *          --> NodeClient.executeLocally(action, request, listener)
+ *          // 根据action的map映射执行对应TransportAction的execute方法
+ *          --> transportAction(action).execute(request, listener)
+ *          --> TransportBulkAction.doExecute()
+ *
+ */
 public class RestController implements HttpServerTransport.Dispatcher {
 
     private static final Logger logger = LogManager.getLogger(RestController.class);

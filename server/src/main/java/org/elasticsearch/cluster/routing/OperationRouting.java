@@ -282,6 +282,9 @@ public class OperationRouting {
         return new ShardId(indexMetadata.getIndex(), generateShardId(indexMetadata, id, routing));
     }
 
+    /**
+     * 根据id 和 routing 值，确定数据应该到那个shard
+     */
     public static int generateShardId(IndexMetadata indexMetadata, @Nullable String id, @Nullable String routing) {
         final String effectiveRouting;
         final int partitionOffset;

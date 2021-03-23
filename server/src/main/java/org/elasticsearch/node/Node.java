@@ -742,6 +742,7 @@ public class Node implements Closeable {
 
     /**
      * Start the node. If the node is already started, this method is no-op.
+     * 使用google的 Guice 实现服务注入，代码和Druid一样
      */
     public Node start() throws NodeValidationException {
         if (!lifecycle.moveToStarted()) {

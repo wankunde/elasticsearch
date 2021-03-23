@@ -71,6 +71,10 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Internal startup code.
+ *
+ * init() --> init() --> setup() --> start()
+ * --> Node.start()
+ * --> keepAliveThread.start() 个人感觉这个线程在这里很奇怪，参考Elasticesearch类的stop方法，感觉是为了作为windows的服务运行而增加的
  */
 final class Bootstrap {
 
@@ -159,6 +163,9 @@ final class Bootstrap {
         StringHelper.randomId();
     }
 
+    /**
+     * 启动Process, OS, JVM的 Probe
+     */
     static void initializeProbes() {
         // Force probes to be loaded
         ProcessProbe.getInstance();
